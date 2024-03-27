@@ -1,4 +1,4 @@
-#We will be utilizing Terraform Provider, Terraform Resource, Data and Input Variables Blocks in this lab. This course will go through each of these configuration blocks in more detail throughout the course.
+We will be utilizing Terraform Provider, Terraform Resource, Data and Input Variables Blocks in this lab. This course will go through each of these configuration blocks in more detail throughout the course.
 #
 Tasks:
 #
