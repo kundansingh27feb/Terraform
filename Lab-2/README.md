@@ -1,4 +1,4 @@
-<!-- #Lab: Terraform Basics
+#Lab: Terraform Basics
 
 #Tasks:
 
@@ -27,4 +27,4 @@ main.tf
 
 resource "random_string" "random" {
 length = 16
-} -->
+}

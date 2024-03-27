@@ -1,4 +1,4 @@
-<!-- 
+
 Tasks:
 
 • Task 1: Create a new VPC in your account in the US-East-1 region
@@ -11,4 +11,4 @@ Tasks:
 • Task 8: Set credentials for Terraform deployment
 • Task 9: Deploy the AWS infrastructure using Terraform
 • Task 10: Delete the AWS resources using Terraform to clean up our AWS environment 
--->
+
