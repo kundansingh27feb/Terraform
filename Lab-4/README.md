@@ -19,7 +19,7 @@ Terraform Providers are plugins that implement resource types for particular clo
 
 For a full list of available Terraform providers, reference the Terraform Provider Registry
 
-![alt text](images/image.png)
+![alt text](images/image1.png)
 
 #
 Task 2: Install the Terraform AWS Provider
