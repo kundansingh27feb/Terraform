@@ -105,11 +105,11 @@ Terraform Resource Blocks
 
 Terraform uses resource blocks to manage infrastructure, such as virtual networks, compute instances, or higher-level components such as DNS records. Resource blocks represent one or more infrastructure objects in your Terraform configuration. Most Terraform providers have a number of different resources that map to the appropriate APIs to manage that particular infrastructure type. 
  
-# Template 
+Template 
 
 < BLOCK TYPE > "< BLOCK LABEL >" "< BLOCK Name >" { 
 
-# Block body 
+Block body 
 
 < IDENTIFIER > = < EXPRESSION > # Argument 
 
@@ -264,3 +264,31 @@ resource "random_id" "randomness" {
 byte_length = 16 
 
 } 
+
+Task 5: Update the Amazon S3 bucket to use the random ID 
+
+ 
+
+Now that we have a random_id being created by Terraform, let’s see how we can use that for other resources. If you’re not aware, Amazon S3 bucket names have to be globally unique, meaning nobody in the world can create a bucket with the same name as an existing bucket. That means if I create a bucket named “my-cool-s2-bucket”, nobody else can create a bucket with the same name. This is where the random_id might come in handy, so let’s update the name of our bucket to use a random ID. In your main.tf file, find the resource block where you created a new Amazon S3 bucket. It’s the code we added in Task 2 above. Modify the bucket argument to include the following: 
+
+ 
+
+resource "aws_s3_bucket" "my-bucket-gurukulsiksha" { 
+
+  bucket = "my-tfm-bucket-gurukul-${random_id.random_key_for_gurkul.hex}" 
+
+  tags = { 
+
+    Name       = "Terraform Bucket" 
+
+    Created_By = "Terraform" 
+
+  } 
+
+} 
+
+ 
+
+Run a terraform plan again to see that Terraform is going to replace our Amazon S3 bucket in our account because the name is changing. The name will now end with our random id that we created using the random_id resource. 
+
+Now that we’re done with going over the Resource block, feel free to delete the resources that we created in this lab. These resources include: • Amazon S3 bucket • Security Group • Random ID Once you deleted them from your Terraform configuration file, go ahead and run a terraform plan and terraform apply to delete the resources from your account. 

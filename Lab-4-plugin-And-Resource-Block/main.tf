@@ -96,8 +96,9 @@ resource "aws_route_table_association" "private" {
   for_each       = aws_subnet.private_subnets
   subnet_id      = each.value.id
 }
+
 resource "aws_s3_bucket" "my-bucket-gurukulsiksha" {
-  bucket = "my-tfm-bucket-gurukul"
+  bucket = "my-tfm-bucket-gurukul-${random_id.random_key_for_gurkul.hex}"
   tags = {
     Name       = "Terraform Bucket"
     Created_By = "Terraform"
