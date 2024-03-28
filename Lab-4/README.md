@@ -168,7 +168,7 @@ Within our resouce block, we have arguments that are specific to the type of res
 Task 2: Add a new resource to deploy an Amazon S3 bucket 
 #
 Ok, so now that we understand more about a resource block, let’s create a new resource that will create an Amazon S3 bucket. In your main.tf file, add the following resource block: 
-
+{
 resource "aws_s3_bucket" "my-bucket-gurukulsiksha" { 
 
   bucket = my-tfm-bucket-gurukul 
@@ -182,6 +182,7 @@ resource "aws_s3_bucket" "my-bucket-gurukulsiksha" {
   } 
 
 } 
+}
 
 resource "aws_s3_bucket_ownership_controls" "my-gurukulsiksha-bucket-acls" { 
 
