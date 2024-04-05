@@ -1,3 +1,4 @@
+
 provider "aws" {
   region = "us-east-1"
 }
@@ -9,16 +10,17 @@ resource "aws_vpc" "vpc" {
     Name        = var.vpc_name
     Environment = var.environment
     Created_By  = "Terraform"
-    Regin = data.aws_region.current.name
+    Regin       = data.aws_region.current.name
   }
 }
 data "aws_ami" "ubuntu_22_04" {
   most_recent = true
   filter {
-    name = "name"
+    name   = "name"
     values = ["ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*"]
   }
   owners = ["099720109477"]
+
 }
 # Creating Prvate Subnet
 resource "aws_subnet" "private_subnets" {
@@ -161,4 +163,22 @@ resource "aws_instance" "web_server" {
     Owner       = local.team
     Application = local.application
   }
+}
+module "subnet_addrs" {
+  source          = "hashicorp/subnets/cidr"
+  version         = "1.0.0"
+  base_cidr_block = "10.0.0.0/22"
+  networks = [
+    {
+      name     = "module_network_a"
+      new_bits = 2
+    },
+    {
+      name     = "module_network_b"
+      new_bits = 2
+    },
+  ]
+}
+output "subnet_addrs" {
+  value = module.subnet_addrs.network_cidr_blocks
 }

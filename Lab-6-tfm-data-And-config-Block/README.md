@@ -1,6 +1,6 @@
 #
 # Terraform Data Block: 
-#
+
 Data sources are used in Terraform to load or query data from APIs or other Terraform workspaces. You can use this data to make your project’s configuration more flexible, and to connect workspaces that manage different parts of your infrastructure. You can also use data sources to connect and share data between workspaces in Terraform Cloud and Terraform Enterprise. To use a data source, you declare it using a data block in your Terraform configuration. Terraform will perform the query and store the returned data. You can then use that data throughout your Terraform configuration file where it makes sense. Data Blocks within Terraform HCL are comprised of the following components:  
 
 • Data Block - “resource” is a top-level keyword like “for” and “while” in other programming languages.  
