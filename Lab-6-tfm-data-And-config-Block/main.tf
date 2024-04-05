@@ -7,11 +7,19 @@ resource "aws_vpc" "vpc" {
   cidr_block = var.vpc_cidr
   tags = {
     Name        = var.vpc_name
-    Environment = "Dev"
+    Environment = var.environment
     Created_By  = "Terraform"
+    Regin = data.aws_regin.current.name
   }
 }
-
+data "aws_ami" "ubuntu_22_04" {
+  most_recent = true
+  filter {
+    name = "ubuntu"
+    values = ["ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*"]
+  }
+  owners = ["1934567"]
+}
 # Creating Prvate Subnet
 resource "aws_subnet" "private_subnets" {
   for_each          = var.private_subnet
@@ -130,12 +138,27 @@ resource "random_id" "random_key_for_gurkul" {
   byte_length = 16
 }
 resource "aws_subnet" "variable-subnet" {
-  vpc_id = aws_vpc.vpc.id
-  cidr_block = var.variable_sub_cidr
-  availability_zone = var.variable_sub_az
+  vpc_id                  = aws_vpc.vpc.id
+  cidr_block              = var.variable_sub_cidr
+  availability_zone       = var.variable_sub_az
   map_public_ip_on_launch = var.variables_sub_auto_ip
   tags = {
-    Name = "Variable_subnet"
+    Name       = "Variable_subnet"
     Created_By = "Terraform"
+  }
+}
+locals {
+  team        = "mgmt_dev"
+  application = "corp_mgmt"
+  server_name = "gurukul-${var.environment}-${var.variable_sub_az}"
+}
+resource "aws_instance" "web_server" {
+  ami           = data.aws_ami.ubuntu_22_04.id
+  instance_type = "t2.micro"
+  subnet_id     = aws_subnet.public_subnets["public_subnet_1"].id
+  tags = {
+    Name        = local.server_name
+    Owner       = local.team
+    Application = local.application
   }
 }

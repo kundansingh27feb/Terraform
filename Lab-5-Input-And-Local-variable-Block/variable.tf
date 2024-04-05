@@ -14,7 +14,7 @@ variable "private_subnet" {
   default = {
     "private_subnet_1" = 1
     "private_subnet_2" = 2
-    "provate_subnet_3" = 3
+    "private_subnet_3" = 3
   }
 }
 variable "public_subnet" {
@@ -26,16 +26,21 @@ variable "public_subnet" {
 }
 variable "variable_sub_cidr" {
   description = "Cird block"
-  type = string
-  default = "10.0.254.0/24"
+  type        = string
+  default     = "10.0.254.0/24"
 }
 variable "variable_sub_az" {
   description = "Availiblity Zone"
-  type = string
-  default = "us-east-1a"
+  type        = string
+  default     = "us-east-1a"
 }
 variable "variables_sub_auto_ip" {
   description = "Set Automatic IP"
-  type = string
-  default = "true"
+  type        = string
+  default     = "true"
+}
+variable "environment" {
+  description = "server environment"
+  type        = string
+  default     = "Development"
 }

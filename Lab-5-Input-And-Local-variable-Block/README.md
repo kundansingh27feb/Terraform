@@ -1,6 +1,9 @@
 #
-Lab: Terraform variable Block
+Lab: Terraform Input variable And Local Variable Block
 #
+
+# Input Variable:
+
 As you being to write Terraform templates with a focus on reusability and DRY development (don’t repeat yourself), you’ll quickly being to realize that variables are going to simplify and increase usability for your Terraform configuration. Input variables allow aspects of a module or configuration to be customized without altering the module’s own source code. This allows modules to be shared between different configurations.  
 
 Input variables (commonly referenced as just ‘variables’) are often declared in a separate file called variables.tf, although this is not required. Most people will consolidate variable declaration in this file for organization and simplification of management. Each variable used in a Terraform configuration must be declared before it can be used. Variables are declared in a variable block - one block for each variable. The variable block contains the variable name, most importantly, and then often includes additional information such as the type, a description, a default value, and other options.  
@@ -231,3 +234,83 @@ variable "variables_sub_auto_ip" {
 Let’s test our new defaults by running another terraform plan. You should see that Terraform no longer asks us for a value for the variables since it will just use the default value if you don’t specify one using another method. And since we provided different values, Terraform wants to update our infrastructure.  
 
 Let’s go ahead and apply our new configuration, which will replace the subnet with one using the CIDR block of “10.0.202.0/24”. Run a terraform apply. Don’t forget to accept the changes by typing yes. 
+
+# Local Variable:
+
+Locals blocks (often referred to as locals) are defined values in Terraform that are used to reduce repetitive references to expressions or values. Locals are very similar to traditional input variables and can be referred to throughout your Terraform configuration. Locals are often used to give a name to the result of an expression to simplify your code and make it easier to read. Locals are not set directly by the user/machine executing the Terraform configuration, and the values don’t change between or during the Terraform workflow (init, plan, apply). Locals are defined in a locals block (plural) and include named local variables with their defined values. Each locals block can contain one or more local variables. Locals are then referenced in your configuration using interpolation using local. (note local and not locals). The syntax of a locals block is as follows:  
+
+Template: 
+
+locals { 
+
+#Block body 
+
+local_variable_name = < EXPRESSION OR VALUE > 
+
+local_variable_name = < EXPRESSION OR VALUE > 
+
+} 
+
+Example:  
+
+locals { 
+
+time = timestamp() 
+
+application = "api_server" 
+
+server_name = "${var.account}-${local.application}" 
+
+• Task 1: Define the Name of an EC2 Instance using a Local Variable 
+
+Task 1: Define the Name of an EC2 Instance using a Local Variable 
+
+Before we can use a locals variable, it needs to be defined in our configuration file. Locals are often defined right in the configuration file where they will be used. In the main.tf file, add the following locals block to the configuration file: 
+
+locals { 
+
+  team        = "mgmt_dev" 
+
+  application = "corp_mgmt" 
+
+  server_name = "gurukul-${var.environment}-${var.variable_sub_az}" 
+
+} 
+
+Next, let’s update the configuration of our web server resource to use the locals variable to define the name. Modify the web_server resource in main.tf so it matches the following: 
+
+resource "aws_instance" "web_server" { 
+
+  ami           = "ami-080e1f13689e07408" 
+
+  instance_type = "t2.micro" 
+
+  subnet_id     = aws_subnet.public_subnets["public_subnet_1"].id 
+
+  tags = { 
+
+    Name        = local.server_name 
+
+    Owner       = local.team 
+
+    Application = local.application 
+
+  } 
+
+} 
+
+Next add the below things in variable.tf file: 
+
+variable "environment" { 
+
+  description = "server environment" 
+
+  type        = string 
+
+  default     = "Development" 
+
+} 
+
+Run a terraform plan to see the changes to our web server. 
+
+Let’s go ahead and commit our code to validate Terraform makes the desired changes to the AWS infrastructure. Run a terraform apply to apply the changes. Log into AWS and validate the changes were applied. Once validated, feel free to remove the locals block and tags on the EC2 instance and then apply the configuration to revert back to the original values. However, you can leave everything in your Terraform configuration if you’d like.  
