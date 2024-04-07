@@ -106,7 +106,7 @@ Template
 
 output “<NAME>” { 
 
-#Block body 
+# Block body 
 
 value= <EXPRESSION> # Argument 
 
