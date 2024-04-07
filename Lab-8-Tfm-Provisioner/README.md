@@ -24,11 +24,17 @@ Provisioners can be used to model specific actions on the local machine or on a 
 In main.tf add the following resource blocks to create a key pair in AWS that is associated with your generated key from the previous lab.  
 #
 resource "aws_key_pair" "generated" { 
+
 key_name = "MyAWSKey" 
+
 public_key = tls_private_key.generated.public_key_openssh 
+
 lifecycle { 
+
 ignore_changes = [key_name] 
+
 } 
+
 } 
 #
 
@@ -37,22 +43,39 @@ ignore_changes = [key_name]
 In main.tf add the following resource block to create a Security Group that allows SSH access.  
 #
 resource "aws_security_group" "ingress-ssh" { 
+
 name = "allow-all-ssh" 
+
 vpc_id = aws_vpc.vpc.id 
+
 ingress { 
+
 cidr_blocks = [ 
+
 "0.0.0.0/0" 
+
 ]
+
 from_port = 22 
+
 to_port = 22 
+
 protocol = "tcp" 
+
 } 
+
 egress { 
+
 from_port = 0 
+
 to_port = 0 
+
 protocol = "-1" 
+
 cidr_blocks = ["0.0.0.0/0"] 
+
 } 
+
 } 
 #
 
@@ -61,49 +84,93 @@ In main.tf add the following resource block to create a Security Group that allo
 # Create Security Group - Web Traffic 
 #
 resource "aws_security_group" "vpc-web" { 
+
 name = "vpc-web-${terraform.workspace}" 
+
 vpc_id = aws_vpc.vpc.id 
+
 description = "Web Traffic" 
+
 ingress { 
+
 description = "Allow Port 80" 
+
 from_port = 80 
+
 to_port = 80 
+
 protocol = "tcp" 
+
 cidr_blocks = ["0.0.0.0/0"] 
+
 } 
+
 ingress { 
+
 description = "Allow Port 443" 
+=
 from_port = 443 
+
 to_port = 443 
+
 protocol = "tcp" 
+
 cidr_blocks = ["0.0.0.0/0"] 
+
 } 
+
 egress { 
+
 description = "Allow all ip and ports outbound" 
+
 from_port = 0 
+
 to_port = 0 
+
 protocol = "-1" 
+
 cidr_blocks = ["0.0.0.0/0"] 
+
 } 
+
 } 
+
 resource "aws_security_group" "vpc-ping" { 
+
 name = "vpc-ping" 
+
 vpc_id = aws_vpc.vpc.id 
+
 description = "ICMP for Ping Access" 
+
 ingress { 
+
 description = "Allow ICMP Traffic" 
+
 from_port = -1 
+
 to_port = -1 
+
 protocol = "icmp" 
+
 cidr_blocks = ["0.0.0.0/0"] 
+
 } 
+
 egress { 
+
 description = "Allow all ip and ports outboun" 
+
 from_port = 0 
+
 to_port = 0 
+
 protocol = "-1" 
+
 cidr_blocks = ["0.0.0.0/0"] 
+
 } 
+
 } 
 #
 
@@ -112,25 +179,45 @@ cidr_blocks = ["0.0.0.0/0"]
 Replace the aws_instance” “ubuntu_server” resource block in your main.tf with the code below to deploy and Ubuntu server, associate the AWS Key, Security Group and connection block for Terraform to connect to your instance: 
 #
 resource "aws_instance" "ubuntu_server" { 
+
 ami = data.aws_ami.ubuntu.id 
+
 instance_type = "t2.micro" 
+
 subnet_id = aws_subnet.public_subnets["public_subnet_1 
+
 "].id 
+
 security_groups = [aws_security_group.vpc-ping.id, 
+
 aws_security_group.ingress-ssh.id, aws_security_group.vpc-web.id] 
+
 associate_public_ip_address = true 
+
 key_name = aws_key_pair.generated.key_name 
+
 connection { 
+
 user = "ubuntu" 
+
 private_key = tls_private_key.generated.private_key_pem 
+
 host = self.public_ip 
+
 } 
+
 tags = { 
+
 Name = "Ubuntu EC2 Server" 
+
 } 
+
 lifecycle { 
+
 ignore_changes = [security_groups] 
+
 } 
+
 } 
 #
 
@@ -141,7 +228,9 @@ You will notice that we are referencing other resource blocks via Terraform inte
 The local-exec provisioner invokes a local executable after a resource is created. We will utilize a local-exec provisioner to make sure our private key is permissioned correctly. This invokes a process on the machine running Terraform, not on the resource. Update the aws_instance” “ubuntu_server” resource block in your main.tf to call a local-exec provisioner:  
 #
 provisioner "local-exec" { 
+
 command = "chmod 600 ${local_file.private_key_pem.filename}" 
+
 } 
 #
 
@@ -150,12 +239,17 @@ command = "chmod 600 ${local_file.private_key_pem.filename}"
 The remote-exec provisioner runs remote commands on the instance provisoned with Terraform. We can use this provisioner to clone our web application code to the isntance and then invoke the setup script inside aws_instance after local exec. 
 #
 provisioner "remote-exec" { 
+
 inline = [ 
+
 "sudo rm -rf /tmp", 
-"sudo git clone https://github.com/hashicorp/demo-terraform-101 /tmp 
-", 
+
+"sudo git clone https://github.com/hashicorp/demo-terraform-101 /tmp",
+
 "sudo sh /tmp/assets/setup-web.sh", 
+
 ] 
+
 } 
 #
 
@@ -184,6 +278,4 @@ Find the public IP from the above output and hit on browser
 
 Visit http://Public_Ip 
 #
-If you want, you can also ssh to your EC2 instance with a command like ssh -i MyAWSKey.pem ubuntu@Public_IP. Type yes when prompted to use the key. Type exit to quit the ssh session.  
-
- 
+If you want, you can also ssh to your EC2 instance with a command like ssh -i MyAWSKey.pem ubuntu@Public_IP. Type yes when prompted to use the key. Type exit to quit the ssh session.
